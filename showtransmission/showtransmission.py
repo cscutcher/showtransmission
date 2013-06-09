@@ -95,7 +95,10 @@ class ShowTransmission(object):
             args = sys.argv[1:]
 
         parser = argparse.ArgumentParser(
-            description="Automates downloading torrents from showrss")
+            description=("Script to parse rss feed from ShowRSS and add to transmission via rpc.\n"
+                         "Note that this script will always write to config location and will  "
+                         "require the --rss-location and --transmission-rpc-url for the first run."
+                         ))
         parser.add_argument("--debug", "-d",
                             dest="log_level",
                             help="Show debug messages",
@@ -117,7 +120,8 @@ class ShowTransmission(object):
                             help="Location of RSS feed for showRSS")
         parser.add_argument("--transmission-rpc-url", "-t",
                             dest="transmission_rpc_url",
-                            help=("Location of transmission RPC URL"),
+                            help=("Location of transmission RPC URL. Usually this is "
+                                  "'http://localhost:9091/transmission/rpc'"),
                             default=None)
 
         parser.add_argument("--output-options",
