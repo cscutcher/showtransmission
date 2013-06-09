@@ -132,14 +132,17 @@ class ShowTransmission(object):
                             action="store_const",
                             const=set())
 
-        self.try_load_config(parser.parse_args(args).config_location)
+        self.config_location = parser.parse_args(args).config_location
+        self.try_load_config(self.config_location)
         parser.parse_args(args=args, namespace=self)
+        logger.debug("Got config '%s'" % (self.make_config_json(include_hashes=False),))
 
     def try_load_config(self, config_path):
         """
         Try and load config from json file at config_path.
         This overwrites any config attributes already set in this instance of ShowTransmission
         """
+        logger.info("Trying to load config from '%s'" % (config_path,))
         try:
             config_file = json.load(file(config_path, 'r'))
         except IOError:
