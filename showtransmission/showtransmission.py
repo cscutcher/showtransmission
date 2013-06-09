@@ -182,7 +182,13 @@ class ShowTransmission(object):
             else:
                 logger.debug("Ignoring episode for '%s' as hash is in set" % (str(episode),))
 
+        logger.info("Found %d feeds. %d added to transmission. %d ignored as already added." %
+                    (add_count + ignore_count, add_count, ignore_count))
+
+        logger.info("Writing config to %s" % (self.config_location))
         file(self.config_location, 'w').write(self.make_config_json())
+
+        logger.info("Completed successfully")
 
 
 def run_script(args=None):
