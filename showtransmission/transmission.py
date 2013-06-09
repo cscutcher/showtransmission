@@ -76,6 +76,16 @@ class TransmissionClient(object):
                 return self._request(method, arguments)
             else:
                 raise http_error
+        except urllib2.URLError as url_error:
+            logger.error("Found URL error when trying to connect to '%s'" % (self.url,))
+            raise url_error
+
+        return self._decode_response(response)
+
+    def _decode_response(self, response):
+        """
+        Decode resposne as returned from _request
+        """
         response_content = response.read()
         try:
             response_data = json.loads(response_content)
