@@ -1,9 +1,17 @@
 showtransmission
 ================
-    usage: showtransmission.py [-h] [--debug] [--quiet] [--config CONFIG_LOCATION]
-                               [--rss-location RSS_LOCATION]
-                               [--transmission-rpc-url TRANSMISSION_RPC_URL]
-                               [--output-options] [--reset-hashes]
+Script to parse rss feed from ShowRSS and add to transmission via rpc.
+
+install
+-------
+    python setup.py install
+
+usage
+-----
+    usage: showtransmission [-h] [--debug] [--quiet] [--config CONFIG_LOCATION]
+                            [--rss-location RSS_LOCATION]
+                            [--transmission-rpc-url TRANSMISSION_RPC_URL]
+                            [--output-options] [--reset-hashes]
 
     Script to parse rss feed from ShowRSS and add to transmission via rpc. Note
     that this script will always write to config location and will require the
@@ -14,8 +22,7 @@ showtransmission
       --debug, -d           Show debug messages
       --quiet, -q           Silence all but error messages
       --config CONFIG_LOCATION, -c CONFIG_LOCATION
-                            Config file location. Default:
-                            /home/cscutcher/.showtransmission
+                            Config file location. Default: ~/.showtransmission
       --rss-location RSS_LOCATION, -r RSS_LOCATION
                             Location of RSS feed for showRSS
       --transmission-rpc-url TRANSMISSION_RPC_URL, -t TRANSMISSION_RPC_URL

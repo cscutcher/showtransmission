@@ -63,7 +63,8 @@ class ShowTransmission(object):
     massive. That or track last N hashes
 
     """
-    DEFAULT_CONFIG_LOCATION = os.path.expanduser("~/.showtransmission")
+    DEFAULT_CONFIG_LOCATION_RAW = "~/.showtransmission"
+    DEFAULT_CONFIG_LOCATION = os.path.expanduser(DEFAULT_CONFIG_LOCATION_RAW)
 
     def __init__(self):
         self.config_location = None
@@ -113,7 +114,7 @@ class ShowTransmission(object):
                             dest="config_location",
                             default=self.DEFAULT_CONFIG_LOCATION,
                             help=("Config file location. Default: %s" %
-                                  (self.DEFAULT_CONFIG_LOCATION,)))
+                                  (self.DEFAULT_CONFIG_LOCATION_RAW,)))
 
         parser.add_argument("--rss-location", "-r",
                             dest="rss_location",
