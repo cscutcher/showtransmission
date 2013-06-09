@@ -160,6 +160,14 @@ class ShowTransmission(object):
             config_dict["hashes"] = list(self.hashes)
         return json.dumps(config_dict)
 
+    def is_episode_downloaded(self, episode):
+        """Check if this episode has already been added to transmission"""
+        return episode.showrss_info_hash in self.hashes
+
+    def mark_episode_downloaded(self, episode):
+        """Mark an episode as downloaded"""
+        self.hashes.add(episode.showrss_info_hash)
+
     def process(self):
         """Parse feed and add each magnet to transmission"""
         if self.output_options:
@@ -172,15 +180,19 @@ class ShowTransmission(object):
         transmission_download_dir = transmission.get_download_dir()
 
         logger.info("Parsing feed '%s'" % (self.rss_location))
+        add_count = 0
+        ignore_count = 0
         for feed_entry in feedparser.parse(self.rss_location)["entries"]:
             episode = Episode(feed_entry)
-            if episode.showrss_info_hash not in self.hashes:
+            if self.is_episode_downloaded(episode):
+                ignore_count += 1
+                logger.debug("Ignoring episode for '%s' as hash is in set" % (str(episode),))
+            else:
                 logger.info("Downloading '%s'" % (episode.title,))
                 download_path = os.path.join(transmission_download_dir, episode.dir_name())
                 transmission.add_torrent(episode.link, download_path)
-                self.hashes.add(episode.showrss_info_hash)
-            else:
-                logger.debug("Ignoring episode for '%s' as hash is in set" % (str(episode),))
+                self.mark_episode_downloaded(episode)
+                add_count += 1
 
         logger.info("Found %d feeds. %d added to transmission. %d ignored as already added." %
                     (add_count + ignore_count, add_count, ignore_count))
