@@ -186,7 +186,7 @@ class ShowTransmission(object):
 
 
 def run_script(args=None):
-    logging.basicConfig()
+    logging.basicConfig(level=logging.INFO)
     s = ShowTransmission()
     s.parse_args(args)
     s.process()
