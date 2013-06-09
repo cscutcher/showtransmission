@@ -1,6 +1,7 @@
 showtransmission
 ================
-Script to parse rss feed from ShowRSS and add to transmission via rpc.
+Script to parse rss feed from ShowRSS (http://showrss.karmorra.info/) and add to transmission via
+rpc.
 
 install
 -------
