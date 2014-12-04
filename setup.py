@@ -12,7 +12,7 @@ setup(
     author_email="chris.scutcher@ninebysix.co.uk",
     description=("Script that monitors a ShowRSS feed and adds new torrents to transmission via "
                  "RPC interface"),
-    install_requires=['feedparser'],
+    install_requires=['feedparser', 'transmissionrpc'],
     entry_points = {
         'console_scripts': [
             'showtransmission = showtransmission.showtransmission:run_script',

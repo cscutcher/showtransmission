@@ -7,7 +7,7 @@ import sys
 import argparse
 
 import feedparser
-from transmission import TransmissionClient
+import transmissionrpc
 
 logger = logging.getLogger("showtransmission")
 
@@ -70,7 +70,7 @@ class ShowTransmission(object):
         self.config_location = None
         self.log_level = logging.INFO
         self.rss_location = None
-        self.transmission_rpc_url = None
+        self.transmission_rpc_host = None
         self.output_options = False
         self.hashes = set()
 
@@ -119,10 +119,14 @@ class ShowTransmission(object):
         parser.add_argument("--rss-location", "-r",
                             dest="rss_location",
                             help="Location of RSS feed for showRSS")
-        parser.add_argument("--transmission-rpc-url", "-t",
-                            dest="transmission_rpc_url",
-                            help=("Location of transmission RPC URL. Usually this is "
-                                  "'http://localhost:9091/transmission/rpc'"),
+        parser.add_argument("--transmission-rpc-host", "-t",
+                            dest="transmission_rpc_host",
+                            default=None)
+        parser.add_argument("--transmission-rpc-password",
+                            dest="transmission_rpc_password",
+                            default=None)
+        parser.add_argument("--transmission-rpc-username", 
+                            dest="transmission_rpc_username",
                             default=None)
 
         parser.add_argument("--output-options",
@@ -153,14 +157,18 @@ class ShowTransmission(object):
         except IOError:
             return
         self.rss_location = config_file.get("rss_location", None)
-        self.transmission_rpc_url = config_file.get("transmission_rpc_url", None)
+        self.transmission_rpc_host = config_file.get("transmission_rpc_host", None)
+        self.transmission_rpc_password = config_file.get("transmission_rpc_password", None)
+        self.transmission_rpc_username = config_file.get("transmission_rpc_username", None)
         self.hashes = set(config_file.get("hashes", []))
 
     def make_config_json(self, include_hashes=True):
         """Create json suitable for saving as config filei to preserve settings and hashes
         in this instance of ShowTransmission"""
         config_dict = {"rss_location": self.rss_location,
-                       "transmission_rpc_url": self.transmission_rpc_url}
+                       "transmission_rpc_host": self.transmission_rpc_host,
+                       "transmission_rpc_username": self.transmission_rpc_username,
+                       "transmission_rpc_password": self.transmission_rpc_password}
         if include_hashes:
             config_dict["hashes"] = list(self.hashes)
         return json.dumps(config_dict)
@@ -179,10 +187,12 @@ class ShowTransmission(object):
             print self.make_config_json()
             return
 
-        logger.info("Connecting to transmission at '%s'" % (self.transmission_rpc_url))
-        transmission = TransmissionClient(self.transmission_rpc_url)
-        transmission.check_connection()
-        transmission_download_dir = transmission.get_download_dir()
+        logger.info("Connecting to transmission at '%s'" % (self.transmission_rpc_host))
+        transmission = transmissionrpc.Client(
+            address=self.transmission_rpc_host,
+            user=self.transmission_rpc_username,
+            password=self.transmission_rpc_password)
+        transmission_download_dir = transmission.get_session().download_dir
 
         logger.info("Parsing feed '%s'" % (self.rss_location))
         add_count = 0
@@ -195,7 +205,7 @@ class ShowTransmission(object):
             else:
                 logger.info("Downloading '%s'" % (episode.title,))
                 download_path = os.path.join(transmission_download_dir, episode.dir_name())
-                transmission.add_torrent(episode.link, download_path)
+                transmission.add_torrent(episode.link, download_dir=download_path)
                 self.mark_episode_downloaded(episode)
                 add_count += 1
 
